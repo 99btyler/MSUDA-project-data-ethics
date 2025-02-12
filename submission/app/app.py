@@ -128,9 +128,21 @@ def map_data():
 def index():
     return render_template("home.html")
 
+@app.route("/map")
+def map():
+    return render_template("map.html")
+
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
+
+@app.route("/about-us")
+def about_us():
+    return render_template("about-us.html")
+
+@app.route("/works-cited")
+def works_cited():
+    return render_template("works-cited.html")
 
 # main
 if __name__ == "__main__":
