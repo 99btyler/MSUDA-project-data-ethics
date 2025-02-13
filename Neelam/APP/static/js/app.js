@@ -66,7 +66,7 @@ function doWork() {
     d3.json("/api/v1.0/map_data").then(function (data) {
 
         // Make Table
-        makeMapData(data);
+         makeMapData(data);
     })
 }
 

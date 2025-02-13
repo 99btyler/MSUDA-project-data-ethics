@@ -13,7 +13,8 @@ class SQLHelper():
     #################################################################
 
     def __init__(self):
-        self.engine = create_engine("sqlite:///us_tornado.sqlite")
+        #self.engine = create_engine("sqlite:///us_tornado.sqlite")
+        self.engine = create_engine("sqlite:///C:/Users/neela/Documents/BootCamp_2024/Project 3/APP/us_tornado.sqlite")
 
     #################################################################
 
@@ -125,20 +126,16 @@ class SQLHelper():
 
         # Define Query
         query = (""" SELECT 
-                            year, 
-                            tornado_magnitude,
-                            start_latitude,
-                            start_longitude,
-                            state
-                        FROM 
-                            us_tornado 
-                        GROUP BY 
-                            year 
-                        ORDER BY 
-                            year asc;""")
+                        year, 
+                        tornado_magnitude,
+                        start_latitude,
+                        start_longitude,
+                        state
+                    FROM 
+                        us_tornado ;""")
         df = pd.read_sql(query, con=conn)
 
-        # Close the connection
+    #Close the connection
         conn.close()
         return(df)
 
