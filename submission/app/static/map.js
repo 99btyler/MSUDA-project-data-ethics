@@ -21,9 +21,8 @@ function chooseColor(depth) {
   }
   
   // Helper function for radius
-  function getRadius(mag) {
-    return mag * 4;
-  }
+  
+  
   
   // Make Map
   function createMap(time_frame) {
