@@ -1,149 +1,133 @@
-from flask import Flask, jsonify, render_template
-import sqlite3
+import pandas as pd
+from flask import Flask, jsonify, render_template, redirect, request
+from sqlHelper import SQLHelper
 
-# flask
+
+#################################################
+# Flask Setup
+#################################################
 app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # remove caching
 
-# flask API
-@app.route("/api/v1.0/bar-chart-1")
+# SQL Helper
+sqlHelper = SQLHelper()
+
+
+#################################################
+# Flask Routes
+#################################################
+
+@app.route("/")
+def welcome():
+    
+    return (
+        render_template("homepage.html")
+
+    )
+@app.route("/map")
+def map():
+    
+    return (
+        render_template("map.html")
+
+    )
+
+@app.route("/plotly")
+def plotly():
+    
+    return (
+        render_template("plotly.html")
+
+    )
+
+@app.route("/about_us")
+def about_us():
+    
+    return (
+        render_template("about_us.html")
+
+    )
+
+@app.route("/work_cited")
+def work_cited():
+    
+    return (
+        render_template("work_cited.html")
+
+    )
+
+@app.route("/api/v1.0/bar_data1")
 def bar_data1():
-    with sqlite3.connect("../database/data/database.db") as connection:
-        cursor = connection.cursor()
+    # Execute queries
+    df = sqlHelper.queryBarData1()
 
-        cursor.execute(
-                        """
-                        SELECT month, COUNT(*) as tornado_count
-                        FROM tornadoes
-                        GROUP BY month
-                        ORDER BY tornado_count DESC
-                        """
-        )
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
 
-        columns = [description[0] for description in cursor.description]
-        rows = cursor.fetchall()
-
-        data = [dict(zip(columns,row)) for row in rows]
-        return jsonify(data)
-
-@app.route("/api/v1.0/bar-chart-2")
+@app.route("/api/v1.0/bar_data2")
 def bar_data2():
-    with sqlite3.connect("../database/data/database.db") as connection:
-        cursor = connection.cursor()
+    # Execute queries
+    df = sqlHelper.queryBarData2()
 
-        cursor.execute(
-                        """
-                        SELECT year, sum(fatalities) AS 'Total_Fatalities'
-                        FROM tornadoes
-                        GROUP BY year
-                        """
-        )
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
 
-        columns = [description[0] for description in cursor.description]
-        rows = cursor.fetchall()
-
-        data = [dict(zip(columns,row)) for row in rows]
-        return jsonify(data)
-
-@app.route("/api/v1.0/bar-chart-3")
+@app.route("/api/v1.0/bar_data3")
 def bar_data3():
-    with sqlite3.connect("../database/data/database.db") as connection:
-        cursor = connection.cursor()
+    # Execute queries
+    df = sqlHelper.queryBarData3()
 
-        cursor.execute(
-                        """
-                        SELECT state, COUNT(*) AS tornado_count 
-                        FROM tornadoes 
-                        GROUP BY state 
-                        ORDER BY tornado_count DESC
-                        LIMIT 20
-                        """
-        )
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
 
-        columns = [description[0] for description in cursor.description]
-        rows = cursor.fetchall()
 
-        data = [dict(zip(columns,row)) for row in rows]
-        return jsonify(data)
-
-@app.route("/api/v1.0/pie-chart")
+@app.route("/api/v1.0/pie_chart")
 def pie_chart():
-    with sqlite3.connect("../database/data/database.db") as connection:
-        cursor = connection.cursor()
+    # Execute Query
+    df = sqlHelper.queryPieChartData()
 
-        cursor.execute(
-                        """
-                        SELECT month, COUNT(*) AS tornado_count
-                        FROM tornadoes
-                        WHERE year = 2021 and state = 'TX'
-                        GROUP BY month
-                        """
-        )
-
-        columns = [description[0] for description in cursor.description]
-        rows = cursor.fetchall()
-
-        data = [dict(zip(columns,row)) for row in rows]
-        return jsonify(data)
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
 
 @app.route("/api/v1.0/table")
 def table():
-    with sqlite3.connect("../database/data/database.db") as connection:
-        cursor = connection.cursor()
+    # Execute Query
+    df = sqlHelper.queryTableData()
 
-        cursor.execute(
-                        """
-                        SELECT year, tornado_magnitude, start_latitude, start_longitude, state
-                        FROM tornadoes
-                        ORDER BY year ASC
-                        """
-        )
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
 
-        columns = [description[0] for description in cursor.description]
-        rows = cursor.fetchall()
-
-        data = [dict(zip(columns,row)) for row in rows]
-        return jsonify(data)
-
-@app.route("/api/v1.0/map")
+@app.route("/api/v1.0/map_data")
 def map_data():
-    with sqlite3.connect("../database/data/database.db") as connection:
-        cursor = connection.cursor()
+    # Execute Query
+    df = sqlHelper.queryMapData()
 
-        cursor.execute(
-                        """
-                        SELECT year, tornado_magnitude, start_latitude, start_longitude, state
-                        FROM tornadoes
-                        ORDER BY year ASC
-                        """
-        )
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
 
-        columns = [description[0] for description in cursor.description]
-        rows = cursor.fetchall()
 
-        data = [dict(zip(columns,row)) for row in rows]
-        return jsonify(data)
+#############################################################
 
-# flask pages
-@app.route("/")
-def index():
-    return render_template("home.html")
+# ELIMINATE CACHING
+@app.after_request
+def add_header(r):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    r.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, public, max-age=0"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    return r
 
-@app.route("/map")
-def map():
-    return render_template("map.html")
+#############################################################
 
-@app.route("/dashboard")
-def dashboard():
-    return render_template("dashboard.html")
-
-@app.route("/about-us")
-def about_us():
-    return render_template("about-us.html")
-
-@app.route("/works-cited")
-def works_cited():
-    return render_template("works-cited.html")
-
-# main
-if __name__ == "__main__":
-    app.run(port=8000, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
