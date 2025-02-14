@@ -13,9 +13,7 @@ class SQLHelper():
     #################################################################
 
     def __init__(self):
-        #self.engine = create_engine("sqlite:///us_tornado.sqlite")
-        self.engine = create_engine("sqlite:///us_tornado.sqlite")
-
+        self.engine = create_engine("sqlite:///../database/us_tornado.sqlite")
     #################################################################
 
     def queryBarData1(self):
