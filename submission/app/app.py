@@ -21,7 +21,7 @@ sqlHelper = SQLHelper()
 def welcome():
     
     return (
-        render_template("homepage.html")
+        render_template("home.html")
 
     )
 @app.route("/map")
@@ -40,19 +40,19 @@ def plotly():
 
     )
 
-@app.route("/about_us")
+@app.route("/about-us")
 def about_us():
     
     return (
-        render_template("about_us.html")
+        render_template("about-us.html")
 
     )
 
-@app.route("/work_cited")
+@app.route("/works-cited")
 def work_cited():
     
     return (
-        render_template("work_cited.html")
+        render_template("works-cited.html")
 
     )
 
