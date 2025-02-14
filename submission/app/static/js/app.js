@@ -169,39 +169,40 @@ function makeTable(data) {
 
     // Create Trace
     let trace = {
-      y: data.map(row => row.state),
-      x: data.map(row => row.tornado_count),
-      type: 'bar',
-      orientation: 'h',
-      marker: {
-        color: 'green'
-      } 
-    }
+        y: data.map(row => row.state),
+        x: data.map(row => row.tornado_count),
+        type: 'bar',
+        orientation: 'h',
+        marker: {
+            color: 'green'
+        }
+    };
   
     // Data trace array
     let traces = [trace];
   
     // Apply a title to the layout
     let layout = {
-      title: {
-        text: `Top 20 States with the Most Tornadoes`
-      },
-      xaxis: {
         title: {
-          text: 'State'
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'Tornado Count'
-        }
-      },
-      height: 600
-    }
+            text: `Top 20 States with the Most Tornadoes`
+        },
+        xaxis: {
+            title: {
+                text: 'Tornado Count'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'State'
+            },
+        },
+        height: 600
+    };
   
-    // Render the plot to the div tag with id "plot"
+    // Render the plot to the div tag with id "plot3"
     Plotly.newPlot('plot3', traces, layout);
-  }
+}
+
 
   function makePieChart(data) {
     // Create Trace for Pie Chart

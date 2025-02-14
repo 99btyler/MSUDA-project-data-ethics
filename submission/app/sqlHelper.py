@@ -63,13 +63,13 @@ class SQLHelper():
     # Define Query
         query = text("""SELECT 
                             state, 
-                            COUNT(*) AS tornado_count 
+                            COUNT(state) AS tornado_count 
                         FROM 
                             us_tornado 
                         GROUP BY 
                             state 
                         ORDER BY 
-                            tornado_count asc
+                            tornado_count desc
                         LIMIT 20;""")
         df = pd.read_sql(query, con=conn)
 
@@ -83,13 +83,16 @@ class SQLHelper():
         conn = self.engine.connect() # Raw SQL/Pandas
 
         # Define Query
-        query = text("""SELECT 
-                            tornado_magnitude, COUNT(tornado_magnitude) AS "Magnitude Count"
-                        FROM 
-                            us_tornado
-                        GROUP BY 
-                            tornado_magnitude;
-                     """)
+        query = text("""
+            SELECT 
+                tornado_magnitude, COUNT(tornado_magnitude) AS "Magnitude Count"
+            FROM 
+                us_tornado
+            WHERE 
+                tornado_magnitude != -9
+            GROUP BY 
+                tornado_magnitude;
+        """)
         df = pd.read_sql(query, con=conn)
 
         # Close the connection
