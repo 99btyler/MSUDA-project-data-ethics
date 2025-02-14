@@ -14,7 +14,7 @@ class SQLHelper():
 
     def __init__(self):
         #self.engine = create_engine("sqlite:///us_tornado.sqlite")
-        self.engine = create_engine("sqlite:///C:/Users/neela/Documents/BootCamp_2024/Project 3/APP/us_tornado.sqlite")
+        self.engine = create_engine("sqlite:///us_tornado.sqlite")
 
     #################################################################
 
