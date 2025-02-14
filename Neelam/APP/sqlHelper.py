@@ -24,14 +24,14 @@ class SQLHelper():
 
         # Define Query
         query = text("""SELECT 
-                    month, 
-                    COUNT(*) AS tornado_count
-                FROM 
-                    us_tornado
-                GROUP BY 
-                    month
-                ORDER BY 
-                    tornado_count DESC;""")
+                            month, 
+                            COUNT(*) AS tornado_count
+                        FROM 
+                            us_tornado
+                        GROUP BY 
+                            month
+                        ORDER BY 
+                            tornado_count DESC;""")
         df = pd.read_sql(query, con=conn)
 
         # Close the connection
@@ -69,7 +69,7 @@ class SQLHelper():
                         GROUP BY 
                             state 
                         ORDER BY 
-                            tornado_count desc
+                            tornado_count asc
                         LIMIT 20;""")
         df = pd.read_sql(query, con=conn)
 
@@ -84,13 +84,12 @@ class SQLHelper():
 
         # Define Query
         query = text("""SELECT 
-                            month, COUNT(*) AS tornado_count
+                            tornado_magnitude, COUNT(tornado_magnitude) AS "Magnitude Count"
                         FROM 
                             us_tornado
-                        WHERE 
-                            year = 2021 and state = 'TX'
                         GROUP BY 
-                            month;""")
+                            tornado_magnitude;
+                     """)
         df = pd.read_sql(query, con=conn)
 
         # Close the connection
