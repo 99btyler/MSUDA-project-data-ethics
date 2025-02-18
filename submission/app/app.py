@@ -15,52 +15,29 @@ sqlHelper = SQLHelper()
 ######################## Flask Routes #####################################
 
 @app.route("/")
-def homepage():
-    
-    return (
-        render_template("home.html")
-
-    )
-
-@app.route("/about-us")
-def about_us():
-    
-    return (
-        render_template("about-us.html")
-
-    )
-
-@app.route("/dashboard2")
-def dashboard2():
-    
-    return (
-        render_template("dashboard2.html")
-
-    )
+def home():
+    return render_template("pages/home.html")
 
 @app.route("/dashboard1")
 def dashboard1():
-    
-    return (
-        render_template("dashboard1.html")
+    return render_template("dashboard1.html")
 
-    )
+@app.route("/dashboard2")
+def dashboard2():
+    return render_template("dashboard2.html")
 
 @app.route("/map")
 def map():
-    
-    return (
-        render_template("map.html")
+    return render_template("map.html")
 
-    )
+@app.route("/about")
+def about_us():
+    return render_template("pages/about.html")
 
-@app.route("/work-cited")
-def work_cited():
-    
-    return (
-        render_template("work-cited.html")
+@app.route("/sources")
+def works_cited():
+    return render_template("pages/sources.html")
 
-    )
 #######################################################################
 
 @app.route("/api/v1.0/table")
