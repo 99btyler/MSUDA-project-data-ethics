@@ -161,7 +161,7 @@ class SQLHelper():
                         start_longitude,
                         state
                     FROM 
-                        us_tornado ;""")
+                        us_tornado;""")
         df = pd.read_sql(query, con=conn)
             #Close the connection
         conn.close()
