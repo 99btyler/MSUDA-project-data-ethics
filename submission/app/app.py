@@ -1,42 +1,24 @@
+#Import the dependencies 
+
 import pandas as pd
 from flask import Flask, jsonify, render_template, redirect, request
 from sqlHelper import SQLHelper
 
+######################## Flask Setup #####################################
 
-#################################################
-# Flask Setup
-#################################################
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # remove caching
 
 # SQL Helper
 sqlHelper = SQLHelper()
 
-
-#################################################
-# Flask Routes
-#################################################
+######################## Flask Routes #####################################
 
 @app.route("/")
-def welcome():
+def homepage():
     
     return (
         render_template("home.html")
-
-    )
-@app.route("/map")
-def map():
-    
-    return (
-        render_template("map.html")
-
-    )
-
-@app.route("/plotly")
-def plotly():
-    
-    return (
-        render_template("plotly.html")
 
     )
 
@@ -48,36 +30,83 @@ def about_us():
 
     )
 
-@app.route("/works-cited")
-def work_cited():
+@app.route("/dashboard2")
+def dashboard2():
     
     return (
-        render_template("works-cited.html")
+        render_template("dashboard2.html")
 
     )
 
-@app.route("/api/v1.0/bar_data1")
-def bar_data1():
-    # Execute queries
-    df = sqlHelper.queryBarData1()
+@app.route("/dashboard1")
+def dashboard1():
+    
+    return (
+        render_template("dashboard1.html")
+
+    )
+
+@app.route("/map")
+def map():
+    
+    return (
+        render_template("map.html")
+
+    )
+
+@app.route("/work-cited")
+def work_cited():
+    
+    return (
+        render_template("work-cited.html")
+
+    )
+#######################################################################
+
+@app.route("/api/v1.0/table")
+def table():
+    # Execute Query
+    df = sqlHelper.queryTableData()
 
     # Turn DataFrame into List of Dictionary
     data = df.to_dict(orient="records")
     return jsonify(data)
 
-@app.route("/api/v1.0/bar_data2")
-def bar_data2():
-    # Execute queries
-    df = sqlHelper.queryBarData2()
+
+@app.route("/api/v1.0/linechart_data")
+def linechart_data():
+    # Execute Query
+    df = sqlHelper.queryLineChartData()
 
     # Turn DataFrame into List of Dictionary
     data = df.to_dict(orient="records")
     return jsonify(data)
 
-@app.route("/api/v1.0/bar_data3")
-def bar_data3():
+
+@app.route("/api/v1.0/bubblechart_data")
+def bubblechart_data():
+    # Execute Query
+    df = sqlHelper.queryBubbleChartData()
+
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
+
+
+@app.route("/api/v1.0/time_series")
+def timeSeries_data():
     # Execute queries
-    df = sqlHelper.queryBarData3()
+    df = sqlHelper.queryTimeSeriesData()
+
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
+
+
+@app.route("/api/v1.0/scatter_data")
+def scatter_data():
+    # Execute queries
+    df = sqlHelper.queryScatterChartData()
 
     # Turn DataFrame into List of Dictionary
     data = df.to_dict(orient="records")
@@ -93,14 +122,6 @@ def pie_chart():
     data = df.to_dict(orient="records")
     return jsonify(data)
 
-@app.route("/api/v1.0/table")
-def table():
-    # Execute Query
-    df = sqlHelper.queryTableData()
-
-    # Turn DataFrame into List of Dictionary
-    data = df.to_dict(orient="records")
-    return jsonify(data)
 
 @app.route("/api/v1.0/map_data")
 def map_data():
@@ -110,7 +131,6 @@ def map_data():
     # Turn DataFrame into List of Dictionary
     data = df.to_dict(orient="records")
     return jsonify(data)
-
 
 #############################################################
 

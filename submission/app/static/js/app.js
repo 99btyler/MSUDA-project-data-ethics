@@ -1,225 +1,160 @@
+// Global variables
 let table = d3.select("#tornado_table");
 let tbody = table.select("tbody");
-
-// Make Table Interactive
 let dt_table;
 
-// Event Listener
-d3.select("#filter-btn").on("click", function () {
-    doWork();
-});
+// Trigger initial data load on page load
+window.onload = function() {
+    handleDataUpdate();  // Initialize data on page load
+};
 
-// On Page Load
-doWork();
+// Event listener for the filter button
+d3.select("#filter-btn").on("click", handleDataUpdate);  // Filter and update chart/table when clicked
 
-// Helper Function
-function doWork() {
-    d3.json("/api/v1.0/table").then(function (data) {
-        // Get user input values for filtering
-        const yearInput = d3.select("#year").property("value");
-        const monthInput = d3.select("#month").property("value");
-        const dayInput = d3.select("#day").property("value");
-        const stateInput = d3.select("#state").property("value");
-        const magnitudeInput = d3.select("#tornado-magnitude").property("value");
-        
-        // Filter data based on inputs
-        let filteredData = data;
 
-        if (yearInput) {
-            filteredData = filteredData.filter(row => row.year == yearInput);
-        }
-        if (monthInput) {
-            filteredData = filteredData.filter(row => row.month === monthInput);
-        }
-        if (dayInput) {
-            filteredData = filteredData.filter(row => row.day == dayInput);
-        }
-        if (stateInput) {
-            filteredData = filteredData.filter(row => row.state.toLowerCase().includes(stateInput.toLowerCase()));
-        }
-        if (magnitudeInput) {
-            filteredData = filteredData.filter(row => row.tornado_magnitude === magnitudeInput);
-        }
+// Function to handle data fetching, filtering, and updating both chart and table
+function handleDataUpdate() {
+    const yearInput = d3.select("#year").property("value");
+    const yearInputNumber = yearInput ? Number(yearInput) : null; // Default year if empty
+    const stateInput = d3.select("#state").property("value") || "All States";  // Default state if empty
 
-        // Update the table and plots using filtered data
-        makeTable(filteredData);  // Call makeTable with filtered data
-        updateVisualizations(filteredData);
-    });
-}
-
-function updateVisualizations(filteredData) {
+    // Fetch and process both table data and chart data in parallel
     Promise.all([
-        d3.json("/api/v1.0/bar_data1"),
-        d3.json("/api/v1.0/bar_data2"),
-        d3.json("/api/v1.0/bar_data3"),
-        d3.json("/api/v1.0/pie_chart")
-    ]).then(function ([barData1, barData2, barData3, pieData]) {
-        // Update each plot
-        makeBarChart1(barData1);
-        makeBarChart2(barData2);
-        makeBarChart3(barData3);
-        makePieChart(pieData);
+        d3.json("/api/v1.0/table"),
+        d3.json("/api/v1.0/linechart_data"),
+        d3.json("/api/v1.0/bubblechart_data")
+    ]).then(function ([tableData, chartData, bubblechartData]) {
+        // Filter data based on the year and state input
+        const filteredTableData = filterData(tableData, yearInputNumber, stateInput);
+        const filteredChartData = filterData(chartData, yearInputNumber);
+        const filteredBubbleChartData = filterData(bubblechartData, yearInputNumber, stateInput);
+
+        // Update table and chart with filtered data
+        makeTable(filteredTableData);
+        updateLineChartVisualization(filteredChartData);
+        updateBubbleChartVisualization(filteredBubbleChartData);
     }).catch(function (error) {
-        console.error("Error fetching chart data:", error);
+        console.error("Error fetching data:", error);
     });
 }
 
+// Centralized filter function to handle both year and state filters
+function filterData(data, yearInputNumber, stateInput = "All States") {
+    return data.filter(row => {
+        const yearMatch = yearInputNumber ? row.year === yearInputNumber : true;
+        const stateMatch = stateInput !== "All States" ? row.state.toLowerCase().includes(stateInput.toLowerCase()) : true;
+        return yearMatch && stateMatch;
+    });
+}
+
+// Function to update the table with filtered data
 function makeTable(data) {
-    // Clear Table
-    tbody.html("");
+    tbody.html("");  // Clear the existing table data
+
+    // Destroy DataTable to avoid duplication
     if (dt_table) {
         dt_table.clear().destroy();
     }
-    
-    // Create Table
-    for (let i = 0; i < data.length; i++) {
-        let row = data[i];
 
-        // Create Table Row
+    // Append filtered data to the table
+    data.forEach(function (row) {
         let table_row = tbody.append("tr");
-
-        // Append Cells
         table_row.append("td").text(row.year);
-        table_row.append("td").text(row.tornado_magnitude);
-        table_row.append("td").text(row.start_latitude);
-        table_row.append("td").text(row.start_longitude);
         table_row.append("td").text(row.state);
-        // Other columns can also be appended here
-    }
-    
-    // Initialize DataTable again with new data
+        table_row.append("td").text(row.Total_Fatalities);
+        table_row.append("td").text(row.Total_Injuries);
+        table_row.append("td").text(row.Total_Tornadoes);
+    });
+
+    // Reinitialize DataTable
     dt_table = new DataTable('#tornado_table', {
-        order: [[0, 'desc']] // Sort by year descending by default
+        order: [[0, 'desc']]  // Sort by year descending by default
     });
 }
 
-  function makeBarChart1(data) {
+// Function to update all visualizations (charts)
+function updateLineChartVisualization(filteredData) {
+    makeLineChart(filteredData);
+}
 
-    // Create Trace
-    let trace = {
-      x: data.map(row => row.month),
-      y: data.map(row => row.tornado_count),
-      type: 'bar',
-      marker: {
-        color: 'firebrick'
-      } 
+// Function to create the line chart
+function makeLineChart(filteredData) {
+    if (filteredData.length === 0) {
+        console.error("No data available for the selected year.");
+        return;
     }
 
-    // Data trace array
-    let traces = [trace];
-
-    // Apply a title to the layout
-    let layout = {
-      title: {
-        text: `Months of Peak Tornado Occurrence`
-      },
-      xaxis: {
-        title: {
-          text: 'Months'
-        }
-      },
-      yaxis: {
-        title: {
-          text: 'Tornado Counts'
-        }
-      },
-      height: 600
-    }
-
-    // Render the plot to the div tag with id "plot"
-    Plotly.newPlot('plot1', traces, layout);
-  }
-
-  function makeBarChart2(data) {
-    let trace = {
-    x: data.map(row => row.year),
-    y: data.map(row => row.Total_Fatalities),
-    type: 'bar',
-    marker: {
-      color: 'blue'
-    } 
-  }
-
-  // Data trace array
-  let traces = [trace];
-
-  // Apply a title to the layout
-  let layout = {
-    title: {
-      text: `Tornado Fatalities by Year`
-    },
-    xaxis: {
-      title: {
-        text: 'Year'
-      }
-    },
-    yaxis: {
-      title: {
-        text: 'Deaths'
-      }
-    },
-    height: 600
-  }
-
-  // Render the plot to the div tag with id "plot"
-  Plotly.newPlot('plot2', traces, layout);
-  }
-
-  function makeBarChart3(data) {
-
-    // Create Trace
-    let trace = {
-        y: data.map(row => row.state),
-        x: data.map(row => row.tornado_count),
+    // Create chart traces for tornado count and fatalities
+    const barTrace = {
+        x: filteredData.map(row => row.year),
+        y: filteredData.map(row => row.tornado_count),
         type: 'bar',
-        orientation: 'h',
+        name: 'Tornado Count',
+        marker: { color: 'lightgreen' },
+        width: 0.6
+    };
+
+    const lineTrace = {
+        x: filteredData.map(row => row.year),
+        y: filteredData.map(row => row.fatalities),
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Fatalities',
+        line: { color: 'red' },
+        marker: { symbol: 'circle' }
+    };
+
+    // Layout for the chart with two y-axes
+    const layout = {
+        title: 'U.S. Tornadoes Count and Fatalities by Year',
+        xaxis: { title: 'Year', tickangle: 90 },
+        yaxis: { title: 'Tornado Count', range: [0, Math.max(...filteredData.map(row => row.tornado_count)) + 10], showline: true },
+        yaxis2: { title: 'Fatalities', overlaying: 'y', side: 'right', range: [0, Math.max(...filteredData.map(row => row.fatalities)) + 10], showline: true },
+        width: 900,
+        height: 600
+    };
+
+    // Render the chart
+    Plotly.newPlot('line-chart', [barTrace, lineTrace], layout);
+}
+
+// Function to update the Bubble Chart with filtered data
+function updateBubbleChartVisualization(filteredData) {
+    makeBubbleChart(filteredData);
+}
+
+// Function to create the Bubble Chart
+function makeBubbleChart(filteredData) {
+    if (filteredData.length === 0) {
+        console.log("No data available for the selected state.");
+        return;
+    }
+
+    const years = filteredData.map(row => row.year);
+    const tornadoCounts = filteredData.map(row => row.tornado_count);
+
+    // Build the Bubble Chart
+    const trace = {
+        x: years,
+        y: tornadoCounts,
+        mode: 'markers',
         marker: {
-            color: 'green'
+            color: tornadoCounts,
+            size: tornadoCounts,
+            colorscale: 'Jet',  // Color scale
+            showscale: true
         }
     };
-  
-    // Data trace array
-    let traces = [trace];
-  
-    // Apply a title to the layout
-    let layout = {
-        title: {
-            text: `Top 20 States with the Most Tornadoes`
-        },
-        xaxis: {
-            title: {
-                text: 'Tornado Count'
-            }
-        },
-        yaxis: {
-            title: {
-                text: 'State'
-            },
-        },
-        height: 600
+
+    const layout = {
+        title: 'Tornado Count by Year',
+        yaxis: { title: 'Tornado Count', rangemode: 'tozero', showline: true },
+        xaxis: { title: 'Year', tickangle: -45 },
+        height: 600,
+        hovermode: 'closest'
     };
-  
-    // Render the plot to the div tag with id "plot3"
-    Plotly.newPlot('plot3', traces, layout);
+
+    // Render the Bubble Chart
+    Plotly.newPlot('bubble-chart', [trace], layout);
 }
-
-
-  function makePieChart(data) {
-    // Create Trace for Pie Chart
-    let trace = {
-        labels: data.map(row => row['tornado_magnitude']),  
-        values: data.map(row => row['Magnitude Count']),    
-        type: 'pie',
-        hole: 0.3
-    };
-
-    let layout = {
-        title: 'Tornado Magnitude Distribution in US 1950-2021',
-        height: 600
-    };
-
-    // Render the plot to the div tag with id "pie-chart"
-    Plotly.newPlot('pie-chart', [trace], layout);
-}
-  
 

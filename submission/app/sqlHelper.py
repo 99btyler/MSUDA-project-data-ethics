@@ -1,5 +1,5 @@
+# Import the dependencies
 from sqlalchemy import create_engine, text
-
 import pandas as pd
 
 # Define the SQLHelper Class
@@ -7,125 +7,154 @@ import pandas as pd
 
 class SQLHelper():
 
-    # Initialize PARAMETERS/VARIABLES
-    #################################################################
-    # Database Setup
-    #################################################################
 
+    # Database Setup and parameters/Variables Initialization
     def __init__(self):
         self.engine = create_engine("sqlite:///../database/us_tornado.sqlite")
-    #################################################################
 
-    def queryBarData1(self):
-        # Create our session (link) from Python to the DB
-        conn = self.engine.connect() # Raw SQL/Pandas
-
-        # Define Query
-        query = text("""SELECT 
-                            month, 
-                            COUNT(*) AS tornado_count
-                        FROM 
-                            us_tornado
-                        GROUP BY 
-                            month
-                        ORDER BY 
-                            tornado_count DESC;""")
-        df = pd.read_sql(query, con=conn)
-
-        # Close the connection
-        conn.close()
-        return(df)
-
-    def queryBarData2(self):
-    # Create our session (link) from Python to the DB
-        conn = self.engine.connect() # Raw SQL/Pandas
-
-    # Define Query
-        query = text("""SELECT 
-                            year,
-                            sum(fatalities) AS 'Total_Fatalities'
-                        FROM 
-                            us_tornado
-                        GROUP BY
-                            year;""")
-        df = pd.read_sql(query, con=conn)
-
-        # Close the connection
-        conn.close()
-        return(df)
-    
-    def queryBarData3(self):
-    # Create our session (link) from Python to the DB
-        conn = self.engine.connect() # Raw SQL/Pandas
-
-    # Define Query
-        query = text("""SELECT 
-                            state, 
-                            COUNT(state) AS tornado_count 
-                        FROM 
-                            us_tornado 
-                        GROUP BY 
-                            state 
-                        ORDER BY 
-                            tornado_count desc
-                        LIMIT 20;""")
-        df = pd.read_sql(query, con=conn)
-
-        # Close the connection
-        conn.close()
-        return(df)
-    
-
-    def queryPieChartData(self):
-        # Create our session (link) from Python to the DB
-        conn = self.engine.connect() # Raw SQL/Pandas
-
-        # Define Query
-        query = text("""
-            SELECT 
-                tornado_magnitude, COUNT(tornado_magnitude) AS "Magnitude Count"
-            FROM 
-                us_tornado
-            WHERE 
-                tornado_magnitude != -9
-            GROUP BY 
-                tornado_magnitude;
-        """)
-        df = pd.read_sql(query, con=conn)
-
-        # Close the connection
-        conn.close()
-        return(df)
-    
+    ########## First table/chart on dashboard1 ######################################################
     def queryTableData(self):
         # Create our session (link) from Python to the DB
         conn = self.engine.connect() # Raw SQL/Pandas
 
         # Define Query
         query = text(""" SELECT 
-                            year, 
-                            tornado_magnitude,
-                            start_latitude,
-                            start_longitude,
-                            state
+                            year,
+                            state,
+                            SUM(fatalities) AS Total_Fatalities,
+                            SUM(injuries) AS Total_Injuries,
+                            COUNT(*) AS Total_Tornadoes
                         FROM 
-                            us_tornado 
-                        GROUP BY 
-                            year 
-                        ORDER BY 
-                            year asc;""")
+                            us_tornado
+                        GROUP BY
+                            year, state;""")
         df = pd.read_sql(query, con=conn)
 
         # Close the connection
         conn.close()
         return(df)
     
+    ########## Second chart on dashboard1 ######################################################
+
+    def queryLineChartData(self):
+    # Create our session (link) from Python to the DB
+        conn = self.engine.connect() # Raw SQL/Pandas
+
+        # Define Query
+        query = text("""SELECT 
+                            year, 
+                            COUNT(*) AS tornado_count, 
+                            SUM(fatalities) AS fatalities
+                        FROM 
+                            us_tornado
+                        GROUP BY 
+                            year
+                        ORDER BY 
+                            year ASC;""")
+
+        df = pd.read_sql(query, con=conn)
+
+        #Close the connection
+        conn.close()
+        return(df)
+    
+    ########## Third chart on dashboard1 ######################################################
+
+    def queryBubbleChartData(self):
+    # Create our session (link) from Python to the DB
+        conn = self.engine.connect() # Raw SQL/Pandas
+
+    # Define Query
+        query = text("""SELECT 
+                            state,
+                            year, 
+                            COUNT(*) AS tornado_count
+                        FROM 
+                            us_tornado
+                        WHERE
+                            year >= 2000
+                        GROUP BY 
+                            state, year;""")
+        df = pd.read_sql(query, con=conn)
+
+        # Close the connection
+        conn.close()
+        return(df)
+    
+
+    ########## First and second chart on dashboard2 ######################################################
+    
+    def queryTimeSeriesData(self):
+        # Create our session (link) from Python to the DB
+        conn = self.engine.connect() # Raw SQL/Pandas
+
+        # Define Query
+        query = text("""SELECT 
+                            date,
+                            year,
+                            tornado_magnitude,
+                            COUNT(*) AS tornado_count
+                        FROM 
+                            us_tornado
+
+                        GROUP BY 
+                            date
+                        ORDER BY 
+                            date;""")
+        df = pd.read_sql(query, con=conn)
+
+        # Close the connection
+        conn.close()
+        return(df)
+    
+    ########## Third chart on dashboard2 ######################################################
+
+    def queryScatterChartData(self):
+    # Create our session (link) from Python to the DB
+        conn = self.engine.connect() # Raw SQL/Pandas
+
+    # Define Query
+        query = text("""SELECT tornado_magnitude, 
+                            AVG(tornado_length) AS "Average Tornado Length",
+                            AVG(tornado_width) as "Average Tornado Width"
+                        FROM us_tornado
+                        GROUP BY tornado_magnitude
+                        ORDER BY tornado_magnitude;""")
+        df = pd.read_sql(query, con=conn)
+
+        # Close the connection
+        conn.close()
+        return(df)
+        
+    ########## Forth chart on dashboard2 ######################################################
+
+    def queryPieChartData(self):
+        # Create our session (link) from Python to the DB
+        conn = self.engine.connect() # Raw SQL/Pandas
+
+        # Define Query
+        query = text("""SELECT 
+                            tornado_magnitude,
+                            AVG(fatalities) AS "Average Fatalities"
+                        FROM 
+                            us_tornado
+                        GROUP BY 
+                            tornado_magnitude;
+                     """)
+        df = pd.read_sql(query, con=conn)
+
+        # Close the connection
+        conn.close()
+        return(df)
+    
+    ########## SQL query to show map on dashboard2 ######################################################
+    
     def queryMapData(self):
         # Create our session (link) from Python to the DB
         conn = self.engine.connect() # Raw SQL/Pandas
 
         # Define Query
-        query = (""" SELECT 
+        query = text(""" SELECT 
                         year, 
                         tornado_magnitude,
                         start_latitude,
@@ -134,10 +163,15 @@ class SQLHelper():
                     FROM 
                         us_tornado ;""")
         df = pd.read_sql(query, con=conn)
-
-    #Close the connection
+            #Close the connection
         conn.close()
         return(df)
+
+
+
+
+    
+
 
 
 
