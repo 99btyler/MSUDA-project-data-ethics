@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="row bg-light p-5 text-center">
+
+    <div class="col-md-12">
+        <h2>What is a Tornado?</h2>
+        <p>Among one of the most destructive weather phenomena, it's a vortex of violently rotating winds</p>
+        <img src="{{ url_for('static', filename='img/tornado.jpg') }}" class="img-fluid" />
+    </div>
+
+</div>
+
+<div class="row bg-light p-5 text-center">
+
+    <div class="col-md-12">
+        <h2>More Information</h2>
+        <ul class="list-group p-5">
+            <li class="list-group-item"><a href="https://en.wikipedia.org/wiki/Tornadogenesis" target="_blank">Tornadogenesis,</a> the process by which a tornado forms</li>
+            <li class="list-group-item"><a href="https://en.wikipedia.org/wiki/Fujita_scale" target="_blank">Fujita scale,</a> a scale for rating tornado intensity</li>
+            <li class="list-group-item"><a href="https://en.wikipedia.org/wiki/Enhanced_Fujita_scale" target="_blank">Enhanced Fujita scale,</a> a newer scale for rating tornado intensity</li>
+        </ul>
+    </div>
+
+</div>
+{% endblock %}
