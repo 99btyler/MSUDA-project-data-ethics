@@ -35,9 +35,9 @@ def map():
 def about_us():
     return render_template("pages/about.html")
 
-@app.route("/sources")
+@app.route("/work-cited")
 def works_cited():
-    return render_template("pages/sources.html")
+    return render_template("pages/work-cited.html")
 
 #######################################################################
 

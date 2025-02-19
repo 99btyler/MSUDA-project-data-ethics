@@ -8,13 +8,13 @@ function chooseColor(mag) {
   } else if (mag > 4) {
     color = "red";    // Magnitude 5
   } else if (mag > 3) {
-    color = "blue";   // Magnitude 4
+    color = "lightcoral";   // Magnitude 4
   } else if (mag > 2) {
-    color = "purple"; // Magnitude 3
+    color = "lightpink"; // Magnitude 3
   } else if (mag > 1) {
-    color = "orange"; // Magnitude 2
+    color = "blue"; // Magnitude 2
   } else {
-    color = "yellow"; // Magnitude 1
+    color = "violet"; // Magnitude 1
   }
 
   return color;
