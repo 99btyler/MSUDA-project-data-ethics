@@ -90,8 +90,8 @@ function chooseColor(mag) {
   
       // Step 4: INITIALIZE THE MAP
       let myMap = L.map("map", {
-        center: [40.7128, -74.0059],
-        zoom: 7,
+        center: [37.964, -91.832],
+        zoom: 4,
         layers: [street, markers]
       });
   

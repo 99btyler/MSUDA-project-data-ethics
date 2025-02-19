@@ -10,7 +10,7 @@ class SQLHelper():
 
     # Database Setup and parameters/Variables Initialization
     def __init__(self):
-        self.engine = create_engine("sqlite:///../database/us_tornado_dataset.sqlite")
+        self.engine = create_engine("sqlite:///us_tornado_dataset.sqlite")
 
     ########## First table/chart on dashboard1 ######################################################
     def queryTableData(self):
