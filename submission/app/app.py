@@ -30,14 +30,13 @@ def dashboard2():
 def map():
     return render_template("map.html")
 
-@app.route("/about-us")
 @app.route("/about")
-def about_us():
+def about():
     return render_template("pages/about.html")
 
-@app.route("/work-cited")
-def works_cited():
-    return render_template("pages/work-cited.html")
+@app.route("/sources")
+def sources():
+    return render_template("pages/sources.html")
 
 #######################################################################
 
