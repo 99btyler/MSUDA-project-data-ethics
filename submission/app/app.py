@@ -16,7 +16,7 @@ sqlHelper = SQLHelper()
 
 @app.route("/")
 def home():
-    return render_template("pages/home.html")
+    return render_template("home.html")
 
 @app.route("/dashboard1")
 def dashboard1():
@@ -30,13 +30,13 @@ def dashboard2():
 def map():
     return render_template("map.html")
 
-@app.route("/about")
-def about():
-    return render_template("pages/about.html")
+@app.route("/about-us")
+def about_us():
+    return render_template("about-us.html")
 
-@app.route("/sources")
-def sources():
-    return render_template("pages/sources.html")
+@app.route("/work-cited")
+def work_cited():
+    return render_template("work-cited.html")
 
 #######################################################################
 
