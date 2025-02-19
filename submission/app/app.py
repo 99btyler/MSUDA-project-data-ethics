@@ -101,7 +101,7 @@ def pie_chart():
     return jsonify(data)
 
 
-@app.route("/api/v1.0/map_data")
+@app.route("/api/v1.0/map")
 def map_data():
     # Execute Query
     df = sqlHelper.queryMapData()

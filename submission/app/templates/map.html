@@ -88,9 +88,13 @@
             <div class="col-md-12">
                 <h1>United States Tornadoes</h1>
                 <!-- <label for="complaint_type"> </label>  -->
-                <select id="complaint_type" name="complaint_type">
-                </select>
+              <div class="col-md-12 p-1 text-center bg-light">
+                <label for="year">Year</label>
+                <input id="year-filter" name="year" type="number" min="1950" max="2021">
+                <label for="tornado_magnitude">Magnitude</label>
+                <input id="magnitude-filter" name="Magnitude" type="number" min="0" max="5">
                 <button id="filter-btn">Filter!</button>
+               
             </div>
         </div>
         <div class="row">
@@ -99,7 +103,7 @@
                 <div id="map_container"></div>
             </div>
         </div>
-    </div>
+   </div>
 
     <!-- Our JavaScript -->
     <script type="text/javascript" src="static/js/map.js"></script>
