@@ -10,7 +10,7 @@ class SQLHelper():
 
     # Database Setup and parameters/Variables Initialization
     def __init__(self):
-        self.engine = create_engine("sqlite:///us_tornado_dataset.sqlite")
+        self.engine = create_engine("sqlite:///../database/data/database.db")
 
     ########## First table/chart on dashboard1 ######################################################
     def queryTableData(self):
@@ -25,7 +25,7 @@ class SQLHelper():
                             SUM(injuries) AS Total_Injuries,
                             COUNT(*) AS Total_Tornadoes
                         FROM 
-                            us_tornado
+                            tornado
                         GROUP BY
                             year, state;""")
         df = pd.read_sql(query, con=conn)
@@ -46,7 +46,7 @@ class SQLHelper():
                             COUNT(*) AS tornado_count, 
                             SUM(fatalities) AS fatalities
                         FROM 
-                            us_tornado
+                            tornado
                         GROUP BY 
                             year
                         ORDER BY 
@@ -70,7 +70,7 @@ class SQLHelper():
                             year, 
                             COUNT(*) AS tornado_count
                         FROM 
-                            us_tornado
+                            tornado
                         WHERE
                             year >= 2000
                         GROUP BY 
@@ -95,7 +95,7 @@ class SQLHelper():
                             tornado_magnitude,
                             COUNT(*) AS tornado_count
                         FROM 
-                            us_tornado
+                            tornado
 
                         GROUP BY 
                             date
@@ -117,7 +117,7 @@ class SQLHelper():
         query = text("""SELECT tornado_magnitude, 
                             AVG(tornado_length) AS "Average Tornado Length",
                             AVG(tornado_width) as "Average Tornado Width"
-                        FROM us_tornado
+                        FROM tornado
                         GROUP BY tornado_magnitude
                         ORDER BY tornado_magnitude;""")
         df = pd.read_sql(query, con=conn)
@@ -137,7 +137,7 @@ class SQLHelper():
                             tornado_magnitude,
                             AVG(fatalities) AS "Average Fatalities"
                         FROM 
-                            us_tornado
+                            tornado
                         GROUP BY 
                             tornado_magnitude;
                      """)
@@ -161,7 +161,7 @@ class SQLHelper():
                         start_longitude,
                         state
                     FROM 
-                        us_tornado;""")
+                        tornado;""")
         df = pd.read_sql(query, con=conn)
             #Close the connection
         conn.close()
