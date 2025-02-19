@@ -142,6 +142,25 @@
     </div>
 
     <script src="static/js/app.js"></script>
+
+        <!-- Script for setting active class on navigation links -->
+    <script>
+        // Function to highlight the active link
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentLocation = window.location.pathname;  // Get the current URL path
+            const navLinks = document.querySelectorAll('.nav-link');  // Select all nav links
+
+            navLinks.forEach(link => {
+                // Remove the 'active' class from all links
+                link.classList.remove('active');
+                
+                // If the link href matches the current URL, add the 'active' class
+                if (link.getAttribute('href') === currentLocation) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

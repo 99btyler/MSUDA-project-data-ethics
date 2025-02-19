@@ -34,7 +34,7 @@ d3.select("#filter-btn").on("click", handleMapUpdate);  // Apply filter and upda
 // Function to handle data fetching, filtering, and updating the map
 function handleMapUpdate() {
   const yearInput = d3.select("#year-filter").property("value");
-  const yearInputNumber = yearInput ? Number(yearInput) : 2021; // Default year if empty
+  const yearInputNumber = yearInput ? Number(yearInput) : null; // Default to null if no year selected// Default year if empty
   const magnitudeInput = d3.select("#magnitude-filter").property("value") || "";  // Default state if empty
 
   // Fetch and process map data
@@ -52,8 +52,8 @@ function handleMapUpdate() {
 // Centralized filter function to handle both year and magnitude filters
 function filterDataForMap(data, yearInputNumber, magnitudeInput = "") {
   return data.filter(row => {
-      const yearMatch = yearInputNumber ? row.year === yearInputNumber : true;
-      const magnitudeMatch = magnitudeInput ? row.tornado_magnitude == magnitudeInput : true;
+      const yearMatch = yearInputNumber ? row.year === yearInputNumber : true; // Show all data if no year filter
+      const magnitudeMatch = magnitudeInput ? row.tornado_magnitude == magnitudeInput : true; // Filter by magnitude if specified
       return yearMatch && magnitudeMatch;
   });
 }

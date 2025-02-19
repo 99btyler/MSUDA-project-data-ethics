@@ -122,17 +122,22 @@ function makeLineChart(filteredData) {
 }
 
 // Function to update the Bubble Chart with filtered data
+// Function to update the Bubble Chart with filtered data
 function updateBubbleChartVisualization(filteredData) {
+    // Clear the chart if there's no data for the selected filters
+    if (filteredData.length === 0) {
+        console.log("No data available for the selected state and year.");
+        // Clear the bubble chart or display a message
+        Plotly.newPlot('bubble-chart', []); // Clear the existing chart
+        return;
+    }
+
+    // Proceed to build the chart if data exists
     makeBubbleChart(filteredData);
 }
 
 // Function to create the Bubble Chart
 function makeBubbleChart(filteredData) {
-    if (filteredData.length === 0) {
-        console.log("No data available for the selected state.");
-        return;
-    }
-
     const years = filteredData.map(row => row.year);
     const tornadoCounts = filteredData.map(row => row.tornado_count);
 
