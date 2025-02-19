@@ -1,4 +1,24 @@
  
+ // Color of the marker/magnitude 
+function chooseColor(mag) {
+  let color = "";
+
+  // If statement on color
+  if (mag > 5) {        
+  } else if (mag > 4) {
+    color = "red";    // Magnitude 5
+  } else if (mag > 3) {
+    color = "blue";   // Magnitude 4
+  } else if (mag > 2) {
+    color = "purple"; // Magnitude 3
+  } else if (mag > 1) {
+    color = "orange"; // Magnitude 2
+  } else {
+    color = "yellow"; // Magnitude 1
+  }
+
+  return color;
+}
   function createMap(complaint_type) {
     // Delete Map
     let map_container = d3.select("#map_container");
@@ -37,7 +57,15 @@
                                 <strong>Magnitude:</strong> ${row.tornado_magnitude}<br>
                                 <strong>State:</strong> ${row.state}
                             </div>`;
-        let marker = L.marker([row.start_latitude, row.start_longitude])
+
+        let marker_style = L.ExtraMarkers.icon({
+          icon: "ion-android-sync",
+          iconColor: "white",
+          markerColor: chooseColor(row.tornado_magnitude),
+          shape: "circle"
+        });
+
+        let marker = L.marker([row.start_latitude, row.start_longitude], {icon:marker_style})
             .bindPopup(popupContent, { maxWidth: 200, minWidth: 100 });
         markers.addLayer(marker);
         heatArray.push([row.start_latitude, row.start_longitude]);
@@ -57,13 +85,13 @@
   
       let overlayMaps = {
         HeatMap: heatLayer,
-        Earthquakes: markers
+        
       };
   
       // Step 4: INITIALIZE THE MAP
       let myMap = L.map("map", {
-        center: [40.7128, -74.0059],
-        zoom: 7,
+        center: [37.964, -91.832],
+        zoom: 4,
         layers: [street, markers]
       });
   

@@ -30,6 +30,7 @@ def dashboard2():
 def map():
     return render_template("map.html")
 
+@app.route("/about-us")
 @app.route("/about")
 def about_us():
     return render_template("pages/about.html")
