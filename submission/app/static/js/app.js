@@ -106,7 +106,10 @@ function makeLineChart(filteredData) {
 
     // Layout for the chart with two y-axes
     const layout = {
-        title: 'U.S. Tornadoes Count and Fatalities by Year',
+        title: {
+            text: 'U.S. Tornado Count and Fatalities by Year',
+            font: {size: 22, weight: 'bold'}
+        },
         xaxis: { title: 'Year', tickangle: 90 },
         yaxis: { title: 'Tornado Count', range: [0, Math.max(...filteredData.map(row => row.tornado_count)) + 10], showline: true },
         yaxis2: { title: 'Fatalities', overlaying: 'y', side: 'right', range: [0, Math.max(...filteredData.map(row => row.fatalities)) + 10], showline: true },
@@ -147,7 +150,10 @@ function makeBubbleChart(filteredData) {
     };
 
     const layout = {
-        title: 'Tornado Count by Year',
+        title: {
+            text: 'Tornado Count for states by Year',
+            font: {size: 22, weight: 'bold'}
+        },
         yaxis: { title: 'Tornado Count', rangemode: 'tozero', showline: true },
         xaxis: { title: 'Year', tickangle: -45 },
         height: 600,

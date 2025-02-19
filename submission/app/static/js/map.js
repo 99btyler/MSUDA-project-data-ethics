@@ -59,13 +59,21 @@ function filterDataForMap(data, yearInputNumber, magnitudeInput = "") {
 }
 
 // Modified createMap function to accept filtered data
-function createMap(filteredData) {
-  // Delete Map
-  let map_container = d3.select("#map_container");
-  map_container.html(""); // empties it
-  map_container.append("div").attr("id", "map"); //recreate it
+// Declare map globally to track it
+let myMap;
 
-  // Step 1: CREATE THE BASE LAYERS
+function createMap(filteredData) {
+  // Step 1: REMOVE OLD MAP INSTANCE
+  if (myMap) {
+    myMap.remove();  // Clears the old map
+  }
+
+  // Step 2: RECREATE THE MAP CONTAINER
+  let map_container = d3.select("#map_container");
+  map_container.html("");  // Clears previous map data
+  map_container.append("div").attr("id", "map");  // Recreates the div for the new map
+
+  // Step 3: CREATE BASE LAYERS
   let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   });
@@ -74,7 +82,7 @@ function createMap(filteredData) {
     attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
   });
 
-  // Initialize the Cluster Group
+  // Initialize the Cluster Group & Heatmap Data
   let heatArray = [];
   let markers = L.markerClusterGroup();
 
@@ -97,6 +105,7 @@ function createMap(filteredData) {
 
       let marker = L.marker([row.start_latitude, row.start_longitude], { icon: marker_style })
         .bindPopup(popupContent, { maxWidth: 200, minWidth: 100 });
+
       markers.addLayer(marker);
       heatArray.push([row.start_latitude, row.start_longitude]);
   });
@@ -107,25 +116,25 @@ function createMap(filteredData) {
       blur: 10
   });
 
-  // Step 3: CREATE THE LAYER CONTROL
+  // Step 4: CREATE THE LAYER CONTROL
   let baseMaps = {
-    Street: street,
-    Topography: topo
+    "Street": street,
+    "Topography": topo
   };
 
   let overlayMaps = {
-    HeatMap: heatLayer,
-    Markers: markers
+    "HeatMap": heatLayer,
+    "Markers": markers
   };
 
-  // Step 4: INITIALIZE THE MAP
-  let myMap = L.map("map", {
-      center: [37.964, -91.832],
+  // Step 5: INITIALIZE THE MAP
+  myMap = L.map("map", {
+      center: [37.964, -91.832],  // Centering on the US
       zoom: 4,
-      layers: [street, markers]
+      layers: [street, markers]  // Default layers
   });
 
-  // Step 5: Add the Layer Control, Legend, Annotations as needed
+  // Step 6: Add Layer Control
   L.control.layers(baseMaps, overlayMaps).addTo(myMap);
 }
 
