@@ -71,8 +71,6 @@ class SQLHelper():
                             COUNT(*) AS tornado_count
                         FROM 
                             tornado
-                        WHERE
-                            year >= 2000
                         GROUP BY 
                             state, year;""")
         df = pd.read_sql(query, con=conn)

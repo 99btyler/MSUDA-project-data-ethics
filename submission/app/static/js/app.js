@@ -106,7 +106,10 @@ function makeLineChart(filteredData) {
 
     // Layout for the chart with two y-axes
     const layout = {
-        title: 'U.S. Tornadoes Count and Fatalities by Year',
+        title: {
+            text: 'U.S. Tornado Count and Fatalities by Year',
+            font: {size: 22, weight: 'bold'}
+        },
         xaxis: { title: 'Year', tickangle: 90 },
         yaxis: { title: 'Tornado Count', range: [0, Math.max(...filteredData.map(row => row.tornado_count)) + 10], showline: true },
         yaxis2: { title: 'Fatalities', overlaying: 'y', side: 'right', range: [0, Math.max(...filteredData.map(row => row.fatalities)) + 10], showline: true },
@@ -119,17 +122,22 @@ function makeLineChart(filteredData) {
 }
 
 // Function to update the Bubble Chart with filtered data
+// Function to update the Bubble Chart with filtered data
 function updateBubbleChartVisualization(filteredData) {
+    // Clear the chart if there's no data for the selected filters
+    if (filteredData.length === 0) {
+        console.log("No data available for the selected state and year.");
+        // Clear the bubble chart or display a message
+        Plotly.newPlot('bubble-chart', []); // Clear the existing chart
+        return;
+    }
+
+    // Proceed to build the chart if data exists
     makeBubbleChart(filteredData);
 }
 
 // Function to create the Bubble Chart
 function makeBubbleChart(filteredData) {
-    if (filteredData.length === 0) {
-        console.log("No data available for the selected state.");
-        return;
-    }
-
     const years = filteredData.map(row => row.year);
     const tornadoCounts = filteredData.map(row => row.tornado_count);
 
@@ -147,7 +155,10 @@ function makeBubbleChart(filteredData) {
     };
 
     const layout = {
-        title: 'Tornado Count by Year',
+        title: {
+            text: 'Tornado Count for states by Year',
+            font: {size: 22, weight: 'bold'}
+        },
         yaxis: { title: 'Tornado Count', rangemode: 'tozero', showline: true },
         xaxis: { title: 'Year', tickangle: -45 },
         height: 600,
@@ -157,4 +168,3 @@ function makeBubbleChart(filteredData) {
     // Render the Bubble Chart
     Plotly.newPlot('bubble-chart', [trace], layout);
 }
-

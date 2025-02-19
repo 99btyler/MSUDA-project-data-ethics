@@ -68,7 +68,10 @@ function updateScatterChart(scatterData) {
     };
 
     const layout = {
-        title: 'Tornado Magnitude vs Length and Width with Regression Line',
+        title: {
+            text: 'Tornado Magnitude vs Length and Width with Regression Line',
+            font: {size: 22, weight: 'bold'}
+        },
         width: 800,
         height: 600,
         xaxis: {
@@ -160,8 +163,8 @@ function updateTimeSeriesChart(timeSeriesData, year) {
 
     const layout = {
         title: {
-            text:  `Tornado Counts Over Time by Magnitude (Monthly) for ${year}`,
-            font: {size: 18, weight: 'bold' } 
+            text:  `Tornado Counts by Magnitude (Monthly) for filtered years`,
+            font: {size: 22, weight: 'bold' } 
         }, 
 
         xaxis: {
@@ -209,8 +212,8 @@ function updateTimeSeriesHistogram(timeSeriesData, yearInputNumber) {
 
     const layout = {
         title: {
-            text: `Tornado Counts by Month for ${yearInputNumber}`,
-            font: {size: 18, weight: 'bold' }  
+            text: `Tornado Counts by Month for filtered years`,
+            font: {size: 22, weight: 'bold' }  
         },
         xaxis: { 
             title: 'Month',
@@ -222,7 +225,7 @@ function updateTimeSeriesHistogram(timeSeriesData, yearInputNumber) {
             showline: true
         },
         hovermode: 'closest',
-        width: 600,
+        width: 800,
         height: 600,
     };
 
@@ -249,9 +252,12 @@ function updatePieChart(pieChartData) {
     };
 
     const layout = {
-        title: 'Average Fatalities by Tornado Magnitude',
+        title: {
+            text: 'Average Fatalities by Tornado Magnitude',
+            font: {size: 22, weight: 'bold'}
+        },
         showlegend: true,
-        width: 500,
+        width: 600,
         height: 600,
     };
 
