@@ -80,25 +80,44 @@ class SQLHelper():
         return(df)
     
 
-    ########## First and second chart on dashboard2 ######################################################
+    ########## First chart on dashboard2 ######################################################
     
+    def queryTimeHistogramData(self):
+        # Create our session (link) from Python to the DB
+        conn = self.engine.connect() # Raw SQL/Pandas
+
+        # Define Query
+        query = text("""SELECT 
+                            month,
+                            year,
+                            tornado_magnitude,
+                            COUNT(*) AS tornado_count
+                        FROM 
+                            tornado
+                        GROUP BY 
+                            year,month;""")
+        df = pd.read_sql(query, con=conn)
+
+        # Close the connection
+        conn.close()
+        return(df)
+    
+    ################ Second chart on dashboard2 ######################################################
+
     def queryTimeSeriesData(self):
         # Create our session (link) from Python to the DB
         conn = self.engine.connect() # Raw SQL/Pandas
 
         # Define Query
         query = text("""SELECT 
-                            date,
+                            month,
                             year,
                             tornado_magnitude,
-                            COUNT(*) AS tornado_count
+                            COUNT(tornado_magnitude) AS tornado_count
                         FROM 
                             tornado
-
                         GROUP BY 
-                            date
-                        ORDER BY 
-                            date;""")
+                            year, month, tornado_magnitude;""")
         df = pd.read_sql(query, con=conn)
 
         # Close the connection

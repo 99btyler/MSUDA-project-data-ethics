@@ -18,13 +18,14 @@ function handleDataUpdate() {
     Promise.all([
         d3.json("/api/v1.0/scatter_data"),
         d3.json("/api/v1.0/time_series"),
+        d3.json("/api/v1.0/time_histogram"),
         d3.json("/api/v1.0/pie_chart")
-    ]).then(([scatterData, timeSeriesData, pieChartData]) => {
+    ]).then(([scatterData, timeSeriesData, timeHistogramData, pieChartData]) => {
 
         // Update all charts
         updateScatterChart(scatterData);
         updateTimeSeriesChart(timeSeriesData, yearInput);
-        updateTimeSeriesHistogram(timeSeriesData, yearInput);
+        updateTimeSeriesHistogram(timeHistogramData, yearInput);
         updatePieChart(pieChartData);
     }).catch((error) => {
         console.error("Error fetching data:", error);
@@ -116,43 +117,46 @@ function computeRegression(x, y) {
     return x.map(xVal => m * xVal + b);
 }
 
-// Filter Data by Year Function
-function filterDataByYear(data, year) {
-    const yearInt = parseInt(year);
-    if (isNaN(yearInt)) return [];  // Invalid year, return empty array
 
+function filterDataByYear(data, yearInputNumber) {
+
+    console.log(`Filtering data for year: ${yearInputNumber}`);
+    yearInputNumber = Number(yearInputNumber);
     return data.filter(row => {
-        const dateStr = row.date.split(' ')[0];  // Extract date part (YYYY-MM-DD)
-        const dateObj = new Date(dateStr);
-        return dateObj.getFullYear() === yearInt;
+        const rowYear = Number(row.year); 
+         // Ensure it's a number
+        const yearMatch = yearInputNumber ? (rowYear === yearInputNumber) : true;
+        return yearMatch;
     });
 }
 
+
 // Time Series Chart Update Function
 function updateTimeSeriesChart(timeSeriesData, year) {
-    const filteredData = year ? filterDataByYear(timeSeriesData, year) : timeSeriesData;
+    // Filter data by year if provided, otherwise use the full dataset
+    const defaultyear= 1950;
+    const filteredData = year ? filterDataByYear(timeSeriesData, year) : filterDataByYear(timeSeriesData, defaultyear);
 
-    if (!filteredData.length) return;
+    // Extract unique magnitudes
+    const uniqueMagnitudes = [...new Set(filteredData.map(row => row.tornado_magnitude))];
 
-    const months = Array.from({ length: 12 }, (_, i) => new Date(2025, i));
-    const magnitudes = [...new Set(filteredData.map(d => d.tornado_magnitude))];
-    
-    const traces = magnitudes.map(magnitude => {
-        const filteredDataByMagnitude = filteredData.filter(d => d.tornado_magnitude === magnitude);
-        const tornadoCountsByMonth = Array(12).fill(0);
+    // Prepare traces array
+    const traces = uniqueMagnitudes.map(magnitude => {
+        // Filter data for the specific magnitude
+        const magnitudeData = filteredData.filter(row => row.tornado_magnitude === magnitude);
 
-        filteredDataByMagnitude.forEach(d => {
-            const month = new Date(d.date).getMonth();
-            tornadoCountsByMonth[month] += d.tornado_count;
-        });
+        // Extract months and tornado counts for this magnitude
+        const months = magnitudeData.map(row => row.month);
+        const tornadoCountsByMonth = magnitudeData.map(row => row.tornado_count);
 
+        // Create a trace for this magnitude
         return {
             type: "scatter",
             mode: "lines+markers",  // This enables both lines and markers (small circles)
-            name: `Magnitude ${magnitude}`,
+            name: `Magnitude ${magnitude}`,  // Label the line by its magnitude
             x: months,
             y: tornadoCountsByMonth,
-            line: { width: 2 },
+            line: { width: 2, color: getColorForMagnitude(magnitude) },  // Add color for magnitude
             marker: {
                 size: 10,  // Size of the markers (small circles)
                 opacity: 1.0,  // Make the markers slightly transparent
@@ -161,22 +165,22 @@ function updateTimeSeriesChart(timeSeriesData, year) {
         };
     });
 
+    // Layout for the chart
     const layout = {
         title: {
-            text:  `Tornado Counts by Magnitude (Monthly) for filtered years`,
-            font: {size: 22, weight: 'bold' } 
-        }, 
-
+            text: `Tornado Counts by Magnitude (Monthly) for ${year ? year : '1950'}`,
+            font: { size: 22, weight: 'bold' }
+        },
         xaxis: {
             title: 'Month',
             showgrid: true,
-            tickvals: months,
+            tickvals: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // Set months as 1-12
             ticktext: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         },
-        yaxis: { 
+        yaxis: {
             title: 'Number of Tornadoes',
             showgrid: true,
-            linewidth : 1,
+            linewidth: 1,
             showline: true
         },
         hovermode: 'closest',
@@ -184,26 +188,45 @@ function updateTimeSeriesChart(timeSeriesData, year) {
         height: 600,
     };
 
+    // Plot the chart (pass the array of traces)
     Plotly.newPlot('time-series', traces, layout);
 }
 
+// Function to get a color based on the magnitude (you can define your color scale here)
+function getColorForMagnitude(magnitude) {
+    switch (magnitude) {
+        case 0: return 'green';
+        case 1: return 'skyblue';
+        case 2: return 'blue';
+        case 3: return 'orange';
+        case 4: return 'red';
+        case 5: return 'darkred'
+    }
+}
+
+
+
+const monthlyCounts=0;
 // Time Series Histogram Update Function
 function updateTimeSeriesHistogram(timeSeriesData, yearInputNumber) {
     const filteredData = yearInputNumber ? filterDataByYear(timeSeriesData, yearInputNumber) : timeSeriesData;
+    const monthlyCounts = filteredData.map(row => row.tornado_count);
 
-    if (!filteredData.length) return;
+console.log(filteredData);
+    //if (!filteredData.length) return;
 
-    const monthlyCounts = Array(12).fill(0);
-    filteredData.forEach(d => {
-        const month = new Date(d.date).getMonth();
-        monthlyCounts[month] += 1;
-    });
+  //  const monthlyCounts = Array(12).fill(0);
+   // filteredData.forEach(d => {
+      //  const month = new Date(d.date).getMonth();
+     //   monthlyCounts[month] += 1;
+    
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+
     const trace = {
         type: "bar",
-        name: `Tornado Counts - ${yearInputNumber}`,
+        name: `Tornado Counts`,
         x: months,
         y: monthlyCounts,
         opacity: 0.7,
@@ -212,7 +235,7 @@ function updateTimeSeriesHistogram(timeSeriesData, yearInputNumber) {
 
     const layout = {
         title: {
-            text: `Tornado Counts by Month for filtered years`,
+            text: `Tornado Counts by Month for ${yearInputNumber ? yearInputNumber : '1950'}`,
             font: {size: 22, weight: 'bold' }  
         },
         xaxis: { 
@@ -231,6 +254,8 @@ function updateTimeSeriesHistogram(timeSeriesData, yearInputNumber) {
 
     Plotly.newPlot('histogram', [trace], layout);
 }
+
+
 
 // Pie Chart Update Function
 function updatePieChart(pieChartData) {

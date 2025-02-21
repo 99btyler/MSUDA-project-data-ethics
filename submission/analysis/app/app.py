@@ -69,6 +69,15 @@ def bubblechart_data():
     data = df.to_dict(orient="records")
     return jsonify(data)
 
+@app.route("/api/v1.0/time_histogram")
+def timeHistogram_data():
+    # Execute queries
+    df = sqlHelper.queryTimeHistogramData()
+
+    # Turn DataFrame into List of Dictionary
+    data = df.to_dict(orient="records")
+    return jsonify(data)
+
 
 @app.route("/api/v1.0/time_series")
 def timeSeries_data():
