@@ -51,7 +51,7 @@ This dataset was derived from a dataset produced by NOAA's Storm Prediction Cent
 ## Project Folder Structure
 
 ```
-project-root
+US_Tornado
 │
 ├── app
 │   ├── app.py
@@ -82,7 +82,11 @@ project-root
 │       ├── database.db
 │       ├── unclean-data.csv
 │       └── transformed-data.csv
+├── US_Tornado_Project-Presentation.pdf
+├── US_Tornado_Project-Proposal.pdf
+├── US_Tornado_Technical_Writeup.pdf
 └── README.md
+
 ```
 
 ---
